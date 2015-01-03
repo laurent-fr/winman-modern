@@ -28,6 +28,5 @@ TODO :
 ------
 
 * Some bugs in the base code.
-* No ghost window during move or resize
 * Iconify hangs winman with some apps
 
