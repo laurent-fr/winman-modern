@@ -42,16 +42,6 @@ int screen_num;
 int screen;
 
 XFontStruct *font_info;
-//char icon_name[50];
-
-
-/*typedef struct _windowList {
-    struct _windowList *next;
-    Window window;
-    Window icon;
-    Bool own;
-    char *icon_name;
-} WindowListRec, *WindowList;*/
 
 extern WindowList Icons;
 
@@ -152,7 +142,7 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
     if (first_time) {
 	gc = XCreateGC(display, RootWindow(display, screen_num), 0, NULL);
 	XSetSubwindowMode(display, gc, IncludeInferiors);
-	XSetForeground(display, gc, BlackPixel(display, screen_num));
+	XSetForeground(display, gc, WhitePixel(display, screen_num));
 	XSetFunction(display, gc, GXxor);
 	first_time = False;
     }
@@ -208,7 +198,7 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 	    if (report.xbutton.button == pressed_button) {
 		if (box_drawn)
 		    /* Undraw box */
-		    draw_box(gc, left, top, bottom-top, right-left);
+		    draw_box(gc, left, top, right-left, bottom-top);
 
 		/* This may seem premature but actually
 		 * ButtonRelease indicates that the
@@ -245,7 +235,7 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 
 	    if (box_drawn == True)
 		/* Undraw box */
-		draw_box(gc, left, top, bottom-top, right-left);
+		draw_box(gc, left, top, right-left, bottom-top);
 
 	    /* Can get rid of all MotionNotify events in
 	     * queue, since otherwise the round-trip delays
@@ -262,8 +252,8 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 	    if (move_or_resize == MOVE) {
 		left = move_x - press_x + win_attr.x;
 		top = move_y - press_y + win_attr.y;
-		right = left + win_attr.width;
-		bottom = top + win_attr.height;
+		right = left + win_attr.width ;
+		bottom = top + win_attr.height ;
 	    } else {
 		if (move_x < win_attr.x)
 		    move_x = 0;
@@ -285,7 +275,7 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 		for (temp_size = size_hints.min_width;
 		     temp_size < width; temp_size += size_hints.width_inc);
 
-		bottom = top + temp_size + 2;
+		right = left + temp_size + 2;
 
 		for (temp_size = size_hints.min_height;
 		     temp_size < height;
@@ -295,11 +285,11 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 		 * included) pad their right
 		 * and bottom dimensions by
 		 * 2 pixels */
+		bottom = top + temp_size + 2;
 		
-		right = left + temp_size + 2;
 	    }
 
-	    draw_box(gc, left, top, bottom-top, right-left);
+	    draw_box(gc, left, top, right-left,bottom-top);
 	    box_drawn = True;
 	    break;
 	default:
@@ -318,19 +308,8 @@ void move_resize(Window menuwin, Cursor hand_cursor, Bool move_or_resize)
 
 void draw_box(GC gc, int x, int y, unsigned int width, unsigned int height)
 {
-printf("draw_box %d %d %d %d\n",x,y,width,height);
-    /* Set foreground pixel value -- default may be white on white */
-   // XSetForeground(display, gc, BlackPixel(display, screen));
-
-    /* Drawing on root window -- through all windows */
-  //  XSetSubwindowMode(display, gc, IncludeInferiors);
-
-    /* Logical function is XOR, so that double drawing erases box
-     * on both color and monochrome screens */
-  //  XSetFunction(display, gc, GXxor);
     XDrawRectangle(display, RootWindow(display, screen), gc, x, y,
 		   width, height);
-
 }
 
 void iconify(Window menuwin)
@@ -941,3 +920,4 @@ int main(int argc, char *argv[])
 	}			/* End switch */
     }				/* End menu loop (while) */
 }				/* End main */
+
